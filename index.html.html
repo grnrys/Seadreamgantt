@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DREAM 4 Health - Dynamic Excel-Gantt Planning Matrix</title>
+  <!-- Tailwind CSS CDN for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom thin scrollbar layout for spreadsheet feel */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 flex flex-col font-sans select-none overflow-x-hidden">
+
+  <!-- EXCEL TOP HEADER RIBBON -->
+  <header class="bg-emerald-800 text-white shadow-md">
+    <div class="px-4 py-3 flex flex-wrap justify-between items-center gap-4 border-b border-emerald-900">
+      <div class="flex items-center space-x-3">
+        <div class="bg-white text-emerald-800 p-2 rounded-lg font-bold shadow-inner flex items-center justify-center">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" strokeLinejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-black tracking-tight flex flex-wrap items-center gap-2">
+            DREAM 4 Health Call 2026 
+            <span class="bg-emerald-600 px-2 py-0.5 rounded text-xs text-emerald-100 font-semibold tracking-wide">FULL APPLICATION</span>
+            <!-- Cloud Save Status Indicator -->
+            <span id="sync-status" class="bg-slate-600 px-2.5 py-0.5 rounded text-[10px] text-slate-100 font-extrabold tracking-wide uppercase">Offline Mode</span>
+          </h1>
+          <p class="text-xs text-emerald-100 font-medium opacity-90">Dynamic Excel-Gantt Planning Matrix for Sonia, Ren & Luna</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <button 
+          id="btn-add-task"
+          class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-3 py-2 rounded-md shadow-sm border border-emerald-500 transition-all flex items-center gap-1"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+          Insert Task
+        </button>
+        <button 
+          id="btn-download-html"
+          class="bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs px-3 py-2 rounded-md shadow-sm border border-amber-500 transition-all flex items-center gap-1"
+          title="Export current timeline as a standalone HTML file"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          Download Saveable HTML
+        </button>
+        <button 
+          id="btn-reset"
+          class="bg-slate-700 hover:bg-slate-600 text-slate-100 font-semibold text-xs px-3 py-2 rounded-md shadow-sm border border-slate-600 transition-all flex items-center gap-1"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17"></path></svg>
+          Reset Sheet
+        </button>
+      </div>
+    </div>
+
+    <!-- MOCK EXCEL TABS -->
+    <div class="bg-emerald-700 text-xs px-4 flex space-x-1 border-b border-emerald-800">
+      <button class="px-4 py-2 font-bold border-b-2 border-white bg-emerald-800/50">Gantt Spreadsheet</button>
+      <div class="hidden sm:flex space-x-1">
+        <button class="px-4 py-2 hover:bg-emerald-600/50 text-emerald-100 transition-colors">Form Templates</button>
+        <button class="px-4 py-2 hover:bg-emerald-600/50 text-emerald-100 transition-colors">Budget Model</button>
+        <button class="px-4 py-2 hover:bg-emerald-600/50 text-emerald-100 transition-colors">Risk Register</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- DASHBOARD SUMMARY BOXES -->
+  <section class="bg-white border-b border-slate-200 px-6 py-4 grid grid-cols-1 md:grid-cols-4 gap-4 shadow-sm">
+    <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-100 flex items-center justify-between">
+      <div>
+        <p class="text-[10px] font-bold tracking-wider text-emerald-800 uppercase">Proposal Target</p>
+        <p class="text-lg font-black text-emerald-900">July 10, 2026</p>
+      </div>
+      <span class="bg-emerald-200/50 p-2 rounded-full text-emerald-800">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+      </span>
+    </div>
+
+    <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 flex items-center justify-between">
+      <div>
+        <p class="text-[10px] font-bold tracking-wider text-blue-800 uppercase">Overall Progress</p>
+        <p id="stat-progress" class="text-lg font-black text-blue-900">0% Complete</p>
+      </div>
+      <span class="bg-blue-200/50 p-2 rounded-full text-blue-800">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+      </span>
+    </div>
+
+    <div class="bg-amber-50 p-3 rounded-lg border border-amber-100 flex items-center justify-between">
+      <div>
+        <p class="text-[10px] font-bold tracking-wider text-amber-800 uppercase">Active Workstreams</p>
+        <p id="stat-categories" class="text-lg font-black text-amber-900">0 Categories</p>
+      </div>
+      <span class="bg-amber-200/50 p-2 rounded-full text-amber-800">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+      </span>
+    </div>
+
+    <div class="bg-purple-50 p-3 rounded-lg border border-purple-100 flex items-center justify-between">
+      <div>
+        <p class="text-[10px] font-bold tracking-wider text-purple-800 uppercase">Critical Gateway</p>
+        <p class="text-sm font-bold text-purple-950 truncate max-w-[180px]">Research Office Approval</p>
+      </div>
+      <span class="bg-purple-200/50 p-2 rounded-full text-purple-800">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+      </span>
+    </div>
+  </section>
+
+  <!-- FILTER PANEL -->
+  <div class="bg-slate-100 px-6 py-3 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 text-xs text-slate-600 font-medium">
+    <div class="flex flex-wrap items-center gap-2" id="filter-container">
+      <span>Filter Phase:</span>
+      <button onclick="setFilter('All')" class="filter-btn px-3 py-1 rounded-full border transition-all font-semibold bg-emerald-800 text-white border-emerald-800 shadow-sm" data-phase="All">All</button>
+      <button onclick="setFilter('Planning')" class="filter-btn px-3 py-1 rounded-full border transition-all font-semibold bg-white hover:bg-slate-50 border-slate-300 text-slate-700" data-phase="Planning">Planning</button>
+      <button onclick="setFilter('Drafting')" class="filter-btn px-3 py-1 rounded-full border transition-all font-semibold bg-white hover:bg-slate-50 border-slate-300 text-slate-700" data-phase="Drafting">Drafting</button>
+      <button onclick="setFilter('Budgeting')" class="filter-btn px-3 py-1 rounded-full border transition-all font-semibold bg-white hover:bg-slate-50 border-slate-300 text-slate-700" data-phase="Budgeting">Budgeting</button>
+      <button onclick="setFilter('Portal Portal')" class="filter-btn px-3 py-1 rounded-full border transition-all font-semibold bg-white hover:bg-slate-50 border-slate-300 text-slate-700" data-phase="Portal Portal">Portal Portal</button>
+      <button onclick="setFilter('Review')" class="filter-btn px-3 py-1 rounded-full border transition-all font-semibold bg-white hover:bg-slate-50 border-slate-300 text-slate-700" data-phase="Review">Review</button>
+      <button onclick="setFilter('Approval')" class="filter-btn px-3 py-1 rounded-full border transition-all font-semibold bg-white hover:bg-slate-50 border-slate-300 text-slate-700" data-phase="Approval">Approval</button>
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <span>Timeline Grid Zoom:</span>
+      <button 
+        id="btn-zoom-daily"
+        onclick="setZoom('daily')"
+        class="px-3 py-1 rounded border transition-all font-semibold bg-white text-slate-700 border-slate-300"
+      >
+        Daily
+      </button>
+      <button 
+        id="btn-zoom-weekly"
+        onclick="setZoom('weekly')"
+        class="px-3 py-1 rounded border transition-all font-semibold bg-emerald-800 text-white border-emerald-800"
+      >
+        Weekly
+      </button>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION TOASTER (CUSTOM TOASTS) -->
+  <div id="toast" class="fixed top-4 right-4 z-50 flex items-center gap-2 p-4 rounded-xl border shadow-xl transition-all duration-300 transform translate-x-[150%] opacity-0">
+    <span id="toast-message" class="font-bold text-sm"></span>
+  </div>
+
+  <!-- WORKSPACE AREA (SPLIT SPREADSHEET & GANTT VIEW) -->
+  <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+    
+    <!-- INTERACTIVE EXCEL GRID (LEFT PANEL) -->
+    <div class="w-full lg:w-[48%] bg-white border-r border-slate-200 overflow-auto flex flex-col min-h-[400px]">
+      <div class="bg-slate-50 border-b border-slate-200 px-4 py-2 flex justify-between items-center shrink-0">
+        <span class="font-bold text-xs text-slate-700 tracking-wider uppercase">Interactive Input Rows</span>
+        <span class="text-[10px] text-slate-500 font-semibold italic">Click input or select cell values directly</span>
+      </div>
+
+      <table class="w-full text-left border-collapse min-w-[650px]">
+        <thead>
+          <tr class="bg-slate-100 text-[10px] font-bold text-slate-500 border-b border-slate-200 uppercase tracking-wider">
+            <th class="py-2 px-3 text-center border-r border-slate-200 w-12">ID</th>
+            <th class="py-2 px-3 border-r border-slate-200 w-44">Task Description</th>
+            <th class="py-2 px-3 border-r border-slate-200 w-28">Category</th>
+            <th class="py-2 px-3 border-r border-slate-200 w-28">Start Date</th>
+            <th class="py-2 px-3 border-r border-slate-200 w-28">End Date</th>
+            <th class="py-2 px-3 border-r border-slate-200 w-16 text-center">% Done</th>
+            <th class="py-2 px-3 border-r border-slate-200 w-32">Assignee</th>
+            <th class="py-2 px-3 text-center w-12">Act</th>
+          </tr>
+        </thead>
+        <tbody id="task-table-body" class="divide-y divide-slate-200 text-xs">
+          <!-- Dynamic tasks rendered via Javascript -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- VISUAL GANTT TIMELINE (RIGHT PANEL) -->
+    <div class="w-full lg:w-[52%] bg-slate-50 overflow-auto flex flex-col border-t lg:border-t-0 border-slate-200">
+      
+      <!-- Header Row -->
+      <div class="bg-slate-100 border-b border-slate-200 px-4 py-2 flex justify-between items-center sticky top-0 z-10 shrink-0">
+        <span class="font-bold text-xs text-slate-700 tracking-wider uppercase">Visual Proposal Gantt Tracker</span>
+        <div class="flex gap-4 text-[10px] font-semibold text-slate-500">
+          <span class="flex items-center gap-1">
+            <span class="w-3 h-3 bg-indigo-500 rounded-sm" style="background-color: #47556930; border: 1px solid #475569;"></span> Full Task Span
+          </span>
+          <span class="flex items-center gap-1">
+            <span class="w-3 h-3 bg-teal-500 rounded-sm" style="background-color: #475569;"></span> Progress Completed
+          </span>
+        </div>
+      </div>
+
+      <div class="flex-1 p-4 overflow-x-auto min-w-[600px] select-none">
+        
+        <!-- TIMELINE CONTAINER & AXIS -->
+        <div class="relative border border-slate-200 bg-white rounded-xl shadow-sm inline-block min-w-full" id="gantt-outer-container">
+          <!-- Main visual output generated in JS -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DETAILED INFORMATION PANEL -->
+  <footer class="bg-slate-900 text-slate-300 px-6 py-5 border-t border-slate-800 text-xs">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-4">
+      <div>
+        <h4 class="font-bold text-slate-100 text-sm mb-1">DREAM 4 Health Phase Guidance Notes:</h4>
+        <p class="max-w-2xl text-slate-400 text-xs leading-relaxed">
+          Ensure that draft formulations (LogFrame, Theory of Change) are completed inside GMS by 
+          <strong class="text-emerald-400"> June 26, 2026</strong>. This leaves sufficient runway for 
+          institutional review. Under program rules, you cannot bypass the **Research Office (RO)** approval, 
+          which requires all co-PI GMS portal profiles to be configured first.
+        </p>
+      </div>
+      <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 min-w-[250px] flex flex-col justify-between">
+        <div>
+          <h5 class="font-bold text-slate-100 mb-1.5 flex items-center gap-1">
+            <span class="w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse"></span>
+            Portal Expiry Alert
+          </h5>
+          <p class="text-[11px] text-slate-300 leading-normal">
+            Invitations to Co-PIs expire exactly **72 hours** after transmission. Coordinate sign-ups in advance!
+          </p>
+        </div>
+        <div class="mt-3 pt-2 border-t border-slate-700/50 text-[10px] text-slate-400 font-mono select-all">
+          Sync Status ID: <span id="debug-user-id" class="text-slate-300">Syncing...</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase Script Integration (ES Modules) -->
+  <script type="module" id="gantt-core-script">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // DATA_START
+    const DEFAULT_TASKS = [
+      {
+        "id": "T-01",
+        "name": "Internal Team Alignment Meeting",
+        "phase": "Planning",
+        "start": "2026-05-21",
+        "end": "2026-05-21",
+        "progress": 100,
+        "assignee": "Sonia / Ren / Luna"
+      },
+      {
+        "id": "T-02",
+        "name": "SEA DREAM Online Orientation Sessions",
+        "phase": "Planning",
+        "start": "2026-05-22",
+        "end": "2026-05-25",
+        "progress": 80,
+        "assignee": "Sonia / Ren"
+      },
+      {
+        "id": "T-03",
+        "name": "Draft Application Form & Core Narratives",
+        "phase": "Drafting",
+        "start": "2026-05-26",
+        "end": "2026-06-15",
+        "progress": 20,
+        "assignee": "Ren / Luna"
+      },
+      {
+        "id": "T-04",
+        "name": "Develop Logical Framework & ToC",
+        "phase": "Drafting",
+        "start": "2026-05-26",
+        "end": "2026-06-10",
+        "progress": 10,
+        "assignee": "Ren / Luna"
+      },
+      {
+        "id": "T-05",
+        "name": "Draft Project Budget (Mandatory Template)",
+        "phase": "Budgeting",
+        "start": "2026-06-01",
+        "end": "2026-06-19",
+        "progress": 0,
+        "assignee": "Luna / Sonia"
+      },
+      {
+        "id": "T-06",
+        "name": "Develop Risk Register & Management Plan",
+        "phase": "Drafting",
+        "start": "2026-06-11",
+        "end": "2026-06-19",
+        "progress": 0,
+        "assignee": "Ren"
+      },
+      {
+        "id": "T-07",
+        "name": "Invite Co-PIs & Setup GMS Portal Accounts",
+        "phase": "Portal Portal",
+        "start": "2026-06-01",
+        "end": "2026-06-03",
+        "progress": 40,
+        "assignee": "Sonia (PI)"
+      },
+      {
+        "id": "T-08",
+        "name": "GMS Portal Data Entry (Narratives)",
+        "phase": "Portal Portal",
+        "start": "2026-06-15",
+        "end": "2026-06-26",
+        "progress": 0,
+        "assignee": "Ren / Luna"
+      },
+      {
+        "id": "T-09",
+        "name": "Consolidate & Upload Final Budget",
+        "phase": "Budgeting",
+        "start": "2026-06-22",
+        "end": "2026-06-26",
+        "progress": 0,
+        "assignee": "Sonia / Luna"
+      },
+      {
+        "id": "T-10",
+        "name": "Internal Review & Final Approval Sign-off",
+        "phase": "Review",
+        "start": "2026-06-27",
+        "end": "2026-07-01",
+        "progress": 0,
+        "assignee": "Sonia / Team"
+      },
+      {
+        "id": "T-11",
+        "name": "Submit to Research Office (RO) for Review",
+        "phase": "Approval",
+        "start": "2026-07-02",
+        "end": "2026-07-02",
+        "progress": 0,
+        "assignee": "Sonia (PI)"
+      },
+      {
+        "id": "T-12",
+        "name": "Research Office (RO) Review & Processing",
+        "phase": "Approval",
+        "start": "2026-07-03",
+        "end": "2026-07-08",
+        "progress": 0,
+        "assignee": "Research Office"
+      },
+      {
+        "id": "T-13",
+        "name": "Final Submission to SEA DREAM GMS Portal",
+        "phase": "Approval",
+        "start": "2026-07-09",
+        "end": "2026-07-10",
+        "progress": 0,
+        "assignee": "Sonia (PI)"
+      }
+    ];
+    // DATA_END
+
+    const PHASES = {
+      Planning: { bg: 'bg-emerald-100 text-emerald-800 border-emerald-200', color: '#10b981' },
+      Drafting: { bg: 'bg-blue-100 text-blue-800 border-blue-200', color: '#3b82f6' },
+      Budgeting: { bg: 'bg-amber-100 text-amber-800 border-amber-200', color: '#f59e0b' },
+      'Portal Portal': { bg: 'bg-purple-100 text-purple-800 border-purple-200', color: '#8b5cf6' },
+      Review: { bg: 'bg-rose-100 text-rose-800 border-rose-200', color: '#f43f5e' },
+      Approval: { bg: 'bg-indigo-100 text-indigo-800 border-indigo-200', color: '#6366f1' }
+    };
+
+    // APPLICATION STATE
+    let tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS));
+    let selectedTaskId = null;
+    let zoomLevel = 'weekly';
+    let filterPhase = 'All';
+
+    // HTML elements
+    const tableBody = document.getElementById('task-table-body');
+    const ganttContainer = document.getElementById('gantt-outer-container');
+    const statProgress = document.getElementById('stat-progress');
+    const statCategories = document.getElementById('stat-categories');
+
+    // Cloud Database Configurations
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'dream-gantt-app';
+    const rawFirebaseConfig = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+    let db = null;
+    let auth = null;
+    let currentUser = null;
+    let isCloudEnabled = false;
+
+    // LOCAL STORAGE PERSISTENCE MECHANICS
+    function saveLocalTasks() {
+      try {
+        localStorage.setItem('dream_gantt_tasks', JSON.stringify(tasks));
+        updateSyncStatus("Saved Locally");
+      } catch (e) {
+        console.error("Local save error:", e);
+      }
+    }
+
+    function loadLocalTasks() {
+      try {
+        const stored = localStorage.getItem('dream_gantt_tasks');
+        if (stored) {
+          tasks = JSON.parse(stored);
+          updateSyncStatus("Saved Locally");
+          return true;
+        }
+      } catch (e) {
+        console.error("Local restore error:", e);
+      }
+      return false;
+    }
+
+    // STANDALONE HTML EXPORT MECHANISM
+    function saveToHTMLFile() {
+      const scriptElement = document.getElementById('gantt-core-script');
+      let scriptContent = scriptElement.textContent;
+
+      // Safe replace using designated start/end comment tags
+      const markerRegex = /\/\/\s*DATA_START[\s\S]*?\/\/\s*DATA_END/;
+      const serializedTasks = JSON.stringify(tasks, null, 2);
+      const replacementString = `// DATA_START\n    const DEFAULT_TASKS = ${serializedTasks};\n    // DATA_END`;
+      
+      scriptContent = scriptContent.replace(markerRegex, replacementString);
+      scriptElement.textContent = scriptContent;
+
+      // Extract raw parsed HTML content with doctype wrapper
+      const fullHTML = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+
+      const blob = new Blob([fullHTML], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dream4health_gantt_saved.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showNotification("Stand-alone HTML exported successfully!");
+    }
+
+    // Initialize Cloud Saving Engine
+    async function initCloudSaving() {
+      if (!rawFirebaseConfig) {
+        console.warn("Firebase config missing. Running offline.");
+        if (!loadLocalTasks()) {
+          tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS));
+        }
+        document.getElementById('debug-user-id').textContent = "Offline (Local Only)";
+        render();
+        return;
+      }
+
+      try {
+        const config = JSON.parse(rawFirebaseConfig);
+        const app = initializeApp(config);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        isCloudEnabled = true;
+
+        updateSyncStatus("Connecting...");
+
+        // RULE 3 - Authenticate FIRST
+        if (initialAuthToken) {
+          await signInWithCustomToken(auth, initialAuthToken);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+          if (user) {
+            currentUser = user;
+            document.getElementById('debug-user-id').textContent = user.uid;
+            updateSyncStatus("Connected");
+            await loadFromCloud();
+          } else {
+            currentUser = null;
+            document.getElementById('debug-user-id').textContent = "Not Logged In";
+            updateSyncStatus("Offline");
+          }
+        });
+
+      } catch (err) {
+        console.error("Cloud connection failed:", err);
+        updateSyncStatus("Sync Error");
+        if (!loadLocalTasks()) {
+          tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS));
+        }
+        render();
+      }
+    }
+
+    // Dynamic Visual Sync State updater
+    function updateSyncStatus(status) {
+      const el = document.getElementById('sync-status');
+      if (!el) return;
+      el.textContent = status;
+      el.classList.remove('animate-pulse');
+
+      if (status === "Connected" || status === "Cloud Synced") {
+        el.className = "bg-emerald-600 px-2.5 py-0.5 rounded text-[10px] text-emerald-100 font-extrabold tracking-wide uppercase";
+      } else if (status === "Saving..." || status === "Loading..." || status === "Connecting...") {
+        el.className = "bg-blue-600 px-2.5 py-0.5 rounded text-[10px] text-blue-100 font-extrabold tracking-wide uppercase animate-pulse";
+      } else if (status === "Offline" || status === "Saved Locally") {
+        el.className = "bg-slate-600 px-2.5 py-0.5 rounded text-[10px] text-slate-100 font-extrabold tracking-wide uppercase";
+      } else {
+        el.className = "bg-rose-600 px-2.5 py-0.5 rounded text-[10px] text-rose-100 font-extrabold tracking-wide uppercase";
+      }
+    }
+
+    // RULE 1 & 3 - Loading Private User Schedule data
+    async function loadFromCloud() {
+      if (!isCloudEnabled || !currentUser) return;
+      try {
+        updateSyncStatus("Loading...");
+        const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'schedules', 'main');
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data && data.tasks) {
+            tasks = data.tasks;
+            saveLocalTasks(); // mirror to local
+            showNotification("Successfully loaded progress from the cloud!");
+          }
+        } else {
+          // Fallback check to local recovery if cloud is unseeded
+          loadLocalTasks();
+          await saveToCloud();
+        }
+        updateSyncStatus("Cloud Synced");
+        render();
+      } catch (err) {
+        console.error("Failed to load from cloud:", err);
+        updateSyncStatus("Load Error");
+        loadLocalTasks();
+        render();
+      }
+    }
+
+    // RULE 1 & 3 - Auto-Saving private user data
+    async function saveToCloud() {
+      if (!isCloudEnabled || !currentUser) return;
+      try {
+        updateSyncStatus("Saving...");
+        const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'schedules', 'main');
+        await setDoc(docRef, {
+          tasks: tasks,
+          lastUpdated: new Date().toISOString()
+        });
+        updateSyncStatus("Cloud Synced");
+      } catch (err) {
+        console.error("Cloud sync error:", err);
+        updateSyncStatus("Sync Blocked");
+      }
+    }
+
+    // UI Helper: Notify messages
+    function showNotification(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toast-message');
+
+      toastMessage.textContent = message;
+      toast.className = `fixed top-4 right-4 z-50 flex items-center gap-2 p-4 rounded-xl border shadow-xl transition-all duration-300 transform translate-x-0 opacity-100 ${
+        type === 'error' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+      }`;
+
+      setTimeout(() => {
+        toast.className = 'fixed top-4 right-4 z-50 flex items-center gap-2 p-4 rounded-xl border shadow-xl transition-all duration-300 transform translate-x-[150%] opacity-0';
+      }, 3500);
+    }
+
+    // Date Utilities
+    function parseDate(dateStr) {
+      const parts = dateStr.split('-');
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    function calculateDateBounds() {
+      if (tasks.length === 0) {
+        return { minDate: new Date(2026, 4, 15), maxDate: new Date(2026, 6, 20), rangeDays: 60 };
+      }
+      const dates = tasks.flatMap(t => [parseDate(t.start), parseDate(t.end)]);
+      let min = new Date(Math.min(...dates));
+      let max = new Date(Math.max(...dates));
+      
+      min.setDate(min.getDate() - 3);
+      max.setDate(max.getDate() + 5);
+
+      return {
+        minDate: min,
+        maxDate: max,
+        rangeDays: Math.ceil((max - min) / (1000 * 60 * 60 * 24))
+      };
+    }
+
+    // Render stats at top of dashboard
+    function updateStats() {
+      if (tasks.length === 0) {
+        statProgress.textContent = "0% Complete";
+        statCategories.textContent = "0 Categories";
+        return;
+      }
+      const sum = tasks.reduce((acc, t) => acc + t.progress, 0);
+      const overall = Math.round(sum / tasks.length);
+      const uniqueCats = new Set(tasks.map(t => t.phase)).size;
+
+      statProgress.textContent = `${overall}% Complete`;
+      statCategories.textContent = `${uniqueCats} Core Categories`;
+    }
+
+    // Active table cell change listener
+    function handleCellChange(taskId, field, val) {
+      const idx = tasks.findIndex(t => t.id === taskId);
+      if (idx === -1) return;
+
+      if (field === 'progress') {
+        val = Math.min(100, Math.max(0, parseInt(val) || 0));
+      } else if (field === 'start' || field === 'end') {
+        const task = tasks[idx];
+        const otherField = field === 'start' ? 'end' : 'start';
+        const parsedCurrent = parseDate(val);
+        const parsedOther = parseDate(task[otherField]);
+
+        if (field === 'start' && parsedCurrent > parsedOther) {
+          showNotification("Start date cannot be after End date!", "error");
+          render();
+          return;
+        }
+        if (field === 'end' && parsedCurrent < parsedOther) {
+          showNotification("End date cannot be before Start date!", "error");
+          render();
+          return;
+        }
+      }
+
+      tasks[idx][field] = val;
+      updateStats();
+      renderTimelineOnly();
+      saveLocalTasks(); // Save progress locally
+      saveToCloud();    // Mirror cloud
+    }
+
+    // Change timeline zoom states
+    function setZoom(mode) {
+      zoomLevel = mode;
+      document.getElementById('btn-zoom-daily').className = `px-3 py-1 rounded border transition-all font-semibold ${
+        mode === 'daily' ? 'bg-emerald-800 text-white border-emerald-800' : 'bg-white text-slate-700 border-slate-300'
+      }`;
+      document.getElementById('btn-zoom-weekly').className = `px-3 py-1 rounded border transition-all font-semibold ${
+        mode === 'weekly' ? 'bg-emerald-800 text-white border-emerald-800' : 'bg-white text-slate-700 border-slate-300'
+      }`;
+      renderTimelineOnly();
+    }
+
+    // Change active status phases
+    function setFilter(phase) {
+      filterPhase = phase;
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(btn => {
+        if (btn.getAttribute('data-phase') === phase) {
+          btn.className = "filter-btn px-3 py-1 rounded-full border transition-all font-semibold bg-emerald-800 text-white border-emerald-800 shadow-sm";
+        } else {
+          btn.className = "filter-btn px-3 py-1 rounded-full border transition-all font-semibold bg-white hover:bg-slate-50 border-slate-300 text-slate-700";
+        }
+      });
+      render();
+    }
+
+    // Insert generic row
+    document.getElementById('btn-add-task').addEventListener('click', () => {
+      const lastTask = tasks[tasks.length - 1];
+      const newId = `T-${String(tasks.length + 1).padStart(2, '0')}`;
+      const newTask = {
+        id: newId,
+        name: 'New Custom Task',
+        phase: 'Drafting',
+        start: lastTask ? lastTask.end : '2026-05-21',
+        end: lastTask ? lastTask.end : '2026-05-28',
+        progress: 0,
+        assignee: 'Unassigned'
+      };
+      tasks.push(newTask);
+      showNotification("New task row appended at the bottom!");
+      render();
+      saveLocalTasks();
+      saveToCloud();
+    });
+
+    // Reset back to original state
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      tasks = JSON.parse(JSON.stringify(DEFAULT_TASKS));
+      localStorage.removeItem('dream_gantt_tasks'); // clear storage on baseline reset
+      showNotification("Reset timeline back to standard proposal baseline.");
+      render();
+      saveLocalTasks();
+      saveToCloud();
+    });
+
+    // Download saving button triggers HTML generation
+    document.getElementById('btn-download-html').addEventListener('click', () => {
+      saveToHTMLFile();
+    });
+
+    // Delete single item
+    function removeTask(id) {
+      if (tasks.length <= 1) {
+        showNotification("You must keep at least one task!", "error");
+        return;
+      }
+      tasks = tasks.filter(t => t.id !== id);
+      showNotification("Task row successfully deleted.");
+      render();
+      saveLocalTasks();
+      saveToCloud();
+    }
+
+    // Main rendering logic to compile both views
+    function render() {
+      updateStats();
+      renderTable();
+      renderTimelineOnly();
+    }
+
+    function renderTable() {
+      tableBody.innerHTML = '';
+      const filtered = tasks.filter(t => filterPhase === 'All' || t.phase === filterPhase);
+
+      filtered.forEach(task => {
+        const row = document.createElement('tr');
+        row.className = `hover:bg-emerald-50/40 transition-colors ${selectedTaskId === task.id ? 'bg-emerald-50 font-medium' : ''}`;
+        row.onclick = () => {
+          selectTask(task.id);
+        };
+
+        // Category options builder
+        let selectOptions = '';
+        Object.keys(PHASES).forEach(p => {
+          selectOptions += `<option value="${p}" ${task.phase === p ? 'selected' : ''}>${p}</option>`;
+        });
+
+        row.innerHTML = `
+          <td class="py-2.5 px-3 text-center text-[10px] font-bold text-slate-500 bg-slate-50/50 border-r border-slate-200">${task.id}</td>
+          
+          <td class="p-1 border-r border-slate-200">
+            <input type="text" value="${task.name}" 
+              onchange="handleCellChange('${task.id}', 'name', this.value)"
+              class="w-full px-2 py-1 text-xs bg-transparent hover:bg-slate-100 focus:bg-emerald-50 focus:border-emerald-500 border border-transparent rounded focus:outline-none text-slate-800 font-medium truncate"
+            />
+          </td>
+
+          <td class="p-1 border-r border-slate-200">
+            <select onchange="handleCellChange('${task.id}', 'phase', this.value)"
+              class="w-full px-2 py-1 rounded text-[11px] font-bold border transition-colors focus:outline-none cursor-pointer ${PHASES[task.phase]?.bg || 'bg-slate-100 text-slate-800'}"
+            >
+              ${selectOptions}
+            </select>
+          </td>
+
+          <td class="p-1 border-r border-slate-200">
+            <input type="date" value="${task.start}" 
+              onchange="handleCellChange('${task.id}', 'start', this.value)"
+              class="w-full px-1.5 py-1 text-xs border border-transparent hover:border-slate-300 focus:border-emerald-500 rounded focus:outline-none cursor-pointer text-slate-700 font-semibold"
+            />
+          </td>
+
+          <td class="p-1 border-r border-slate-200">
+            <input type="date" value="${task.end}" 
+              onchange="handleCellChange('${task.id}', 'end', this.value)"
+              class="w-full px-1.5 py-1 text-xs border border-transparent hover:border-slate-300 focus:border-emerald-500 rounded focus:outline-none cursor-pointer text-slate-700 font-semibold"
+            />
+          </td>
+
+          <td class="p-1 border-r border-slate-200">
+            <input type="number" min="0" max="100" value="${task.progress}" 
+              onchange="handleCellChange('${task.id}', 'progress', this.value)"
+              class="w-full px-1 py-1 text-xs border border-transparent text-center hover:border-slate-300 focus:border-emerald-500 rounded focus:outline-none text-slate-700 font-bold"
+            />
+          </td>
+
+          <td class="p-1 border-r border-slate-200">
+            <input type="text" value="${task.assignee}" 
+              onchange="handleCellChange('${task.id}', 'assignee', this.value)"
+              class="w-full px-2 py-1 text-xs bg-transparent hover:bg-slate-100 focus:bg-emerald-50 focus:border-emerald-500 border border-transparent rounded focus:outline-none text-slate-600 font-semibold italic"
+            />
+          </td>
+
+          <td class="py-2.5 px-3 text-center">
+            <button onclick="event.stopPropagation(); removeTask('${task.id}')"
+              class="text-slate-400 hover:text-rose-600 transition-colors p-1 hover:bg-rose-50 rounded"
+              title="Delete Row"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Expose selectTask to window scope for inline HTML event access inside module setup
+    function selectTask(id) {
+      selectedTaskId = id;
+      highlightSelectedRow(id);
+    }
+
+    function highlightSelectedRow(id) {
+      const rows = tableBody.querySelectorAll('tr');
+      rows.forEach(r => {
+        if (r.children[0].textContent === id) {
+          r.className = "hover:bg-emerald-50/40 transition-colors bg-emerald-50 font-medium";
+        } else {
+          r.className = "hover:bg-emerald-50/40 transition-colors";
+        }
+      });
+      // Highlight Gantt Bars
+      const bars = document.querySelectorAll('.gantt-row');
+      bars.forEach(b => {
+        if (b.getAttribute('data-id') === id) {
+          b.className = "gantt-row flex items-stretch hover:bg-slate-50/50 transition-colors py-2 bg-emerald-50/25";
+        } else {
+          b.className = "gantt-row flex items-stretch hover:bg-slate-50/50 transition-colors py-2";
+        }
+      });
+    }
+
+    function renderTimelineOnly() {
+      const { minDate, maxDate, rangeDays } = calculateDateBounds();
+      const filtered = tasks.filter(t => filterPhase === 'All' || t.phase === filterPhase);
+
+      // Generate Calendar arrays
+      const datesArray = [];
+      let temp = new Date(minDate);
+      while (temp <= maxDate) {
+        datesArray.push(new Date(temp));
+        temp.setDate(temp.getDate() + 1);
+      }
+
+      // Generate Weekly structural headers
+      const weeksArray = [];
+      let currentWeek = [];
+      datesArray.forEach(d => {
+        currentWeek.push(d);
+        if (currentWeek.length === 7 || d.getDay() === 0) {
+          weeksArray.push({
+            start: currentWeek[0],
+            end: currentWeek[currentWeek.length - 1],
+            days: [...currentWeek]
+          });
+          currentWeek = [];
+        }
+      });
+      if (currentWeek.length > 0) {
+        weeksArray.push({
+          start: currentWeek[0],
+          end: currentWeek[currentWeek.length - 1],
+          days: [...currentWeek]
+        });
+      }
+
+      // Render outer header axis
+      let headerHTML = `
+        <div class="flex border-b border-slate-200 sticky top-0 bg-slate-50 rounded-t-xl text-[10px] font-bold text-slate-600 z-10">
+          <div class="w-40 py-3 px-3 border-r border-slate-200 shrink-0 flex items-center bg-slate-100 rounded-tl-xl text-slate-700 font-extrabold">
+            Task Milestones
+          </div>
+      `;
+
+      if (zoomLevel === 'daily') {
+        headerHTML += `<div class="flex-1 flex min-w-[1200px]">`;
+        datesArray.forEach(date => {
+          const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+          headerHTML += `
+            <div class="flex-1 text-center py-2 border-r border-slate-200 shrink-0 min-w-[24px] ${isWeekend ? 'bg-amber-50/50' : ''}">
+              <div class="font-black text-[9px] text-slate-400">${['S','M','T','W','T','F','S'][date.getDay()]}</div>
+              <div class="text-[10px] text-slate-700 mt-0.5">${date.getDate()}</div>
+            </div>
+          `;
+        });
+        headerHTML += `</div>`;
+      } else {
+        headerHTML += `<div class="flex-1 flex">`;
+        weeksArray.forEach((week, idx) => {
+          headerHTML += `
+            <div class="flex-1 text-center py-2.5 border-r border-slate-200 shrink-0 min-w-[80px]">
+              <div class="text-slate-800 font-extrabold">Wk ${idx + 1}</div>
+              <div class="text-[9px] text-slate-500 font-semibold mt-0.5">
+                ${week.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              </div>
+            </div>
+          `;
+        });
+        headerHTML += `</div>`;
+      }
+      headerHTML += `</div>`;
+
+      // Render individual timeline bar rows
+      let rowsHTML = `<div class="divide-y divide-slate-100">`;
+      filtered.forEach(task => {
+        const startDate = parseDate(task.start);
+        const endDate = parseDate(task.end);
+
+        const totalDays = Math.max(1, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1);
+        const daysToStart = Math.max(0, Math.ceil((startDate - minDate) / (1000 * 60 * 60 * 24)));
+
+        const leftPercent = (daysToStart / rangeDays) * 100;
+        const widthPercent = (totalDays / rangeDays) * 100;
+
+        const isRowSelected = selectedTaskId === task.id;
+
+        rowsHTML += `
+          <div class="gantt-row flex items-stretch hover:bg-slate-50/50 transition-colors py-2 ${isRowSelected ? 'bg-emerald-50/25' : ''}" 
+            data-id="${task.id}"
+            onclick="selectTask('${task.id}')"
+          >
+            <div class="w-40 px-3 shrink-0 flex flex-col justify-center border-r border-slate-200 pr-2">
+              <span class="font-bold text-slate-800 text-xs truncate" title="${task.name}">${task.name}</span>
+              <span class="text-[9px] font-semibold text-slate-400">
+                ${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              </span>
+            </div>
+
+            <div class="flex-1 relative py-1 flex items-center overflow-visible bg-white/20">
+        `;
+
+        // Render cell background vertical grid guidelines
+        if (zoomLevel === 'daily') {
+          rowsHTML += `<div class="absolute inset-0 flex pointer-events-none">`;
+          datesArray.forEach(date => {
+            const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+            rowsHTML += `<div class="flex-1 border-r border-slate-100/50 ${isWeekend ? 'bg-slate-100/30' : ''}"></div>`;
+          });
+          rowsHTML += `</div>`;
+        }
+
+        // Render actual task bar overlays
+        const colorHex = PHASES[task.phase]?.color || '#64748b';
+        rowsHTML += `
+              <div class="absolute h-8 rounded-lg shadow-sm flex items-center cursor-pointer border hover:shadow transition-all duration-200 overflow-hidden ${isRowSelected ? 'ring-2 ring-indigo-500' : ''}"
+                style="left: ${leftPercent}%; width: ${widthPercent}%; background-color: ${colorHex}15; border-color: ${colorHex};"
+              >
+                <div class="absolute left-0 top-0 bottom-0 opacity-80"
+                  style="width: ${task.progress}%; background-color: ${colorHex};"
+                ></div>
+
+                <div class="absolute inset-x-0 mx-2 flex items-center justify-between text-[9px] font-black tracking-tight select-none pointer-events-none drop-shadow-sm z-10 text-slate-800">
+                  <span class="truncate max-w-[70%]">${task.assignee}</span>
+                  <span>${task.progress}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      rowsHTML += `</div>`;
+
+      // Assign all to Gantt container element
+      ganttContainer.innerHTML = headerHTML + rowsHTML;
+    }
+
+    // EXPOSE UTILITIES GLOBALLY (Required because ES Module script scopes variables locally)
+    window.setFilter = setFilter;
+    window.setZoom = setZoom;
+    window.removeTask = removeTask;
+    window.handleCellChange = handleCellChange;
+    window.selectTask = selectTask;
+
+    // INITIALIZATION RUN
+    window.onload = function() {
+      initCloudSaving();
+    };
+  </script>
+</body>
+</html>
